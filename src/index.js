@@ -47,6 +47,16 @@ const tType = [
     [0, 0, 0]
 ]
 
+const blockColors = [
+    'limegreen',
+    'darkorange',
+    'mediumorchid',
+    'dodgerblue',
+    'orangered',
+    'cornflowerblue',
+    'tomato'
+]
+
 const blockTypes = {
     zType,
     sType,

@@ -1,8 +1,8 @@
-const mapWidth = 300
+const mapWeight = 300
 const mapHeight = 600
 const numberOfRows = 20
 const numberOfCols = 10
-const cellSize = mapWidth / numberOfCols
+const cellSize = mapWeight / numberOfCols
 const borderSize = 0.2
 
 const zType = [
@@ -89,6 +89,24 @@ class Block {
 
 const checkCanMove = () => {
     return true
+}
+
+const drawField = (field, ctx) => {
+    field.forEach((row, rowIndex) => {
+        row.forEach((cells, columnIndex) => {
+            ctx.fillStyle = cell ? blockColors[cell - 1] : 'lightblue'
+            ctx.strokeStyle = '#555'
+            ctx.lineWidth = borderSize
+
+            const args = [
+                columnIndex * cellSize, rowIndex * cellSize,
+                cellSize, cellSize
+            ]
+
+            ctx.fillRect(...args)
+            ctx.strokeRect(...args)
+        })
+    })
 }
 
 const { requestAnimationFrame } = window

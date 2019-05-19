@@ -75,8 +75,69 @@ class Block {
     }
 }
 
-const render = (game, block, time) => {
+const checkCanMove = () => {
+    return true
+}
 
+const fps = 24
+const timeToMoveDown = 500
+
+let prevTime = 0
+let counterOfF = 0
+let prevPosition = { x:0, y:0 }
+
+const render = (game, block, time) => {
+    if(!block) {
+        const arrOfTypes = Object.values(blockTypes)
+        const blockType = arrOfTypes[arrOfTypes.length * Math.random() | 0]
+        const x = ((numberOfCols - blockType.length) / 2) | 0
+        block = new Block(blockType, x, 0)
+        prevPosition = { x, y:0 }
+    }
+
+    const { ctx, field } = game
+    const { position } = block
+
+    if (time - prevTime > 1000 / fps) {
+        counterOfF++
+        if (counterOfF === (fps * timeToMoveDown) / 1000) {
+            counterOfF = 0
+            if (block && block.isAlive) {
+                position.y++
+            } else {
+                block = null
+            }
+        }
+    }
+    prevTime = time
+
+    insertIntoArray(prevBlockCells, field, prevPosition.x, true)
+
+    const canMove = checkCanMove(block, field)
+    if(!canMove) {
+        position.x = prevPosition.x
+        block.cells = prevBlockCells
+    }
+
+    
+}
+
+const insertIntoArray = (childArr, parentArr, row, col, clearMode) => {
+    let i = 0
+    while(i < childArr.length) {
+        let j = 0
+        while(j < childArr[i].length) {
+            parentArr[row + i][col + j] = !clearMode
+            ? childArr[i][j]
+            ? childArr[i][j]
+            :parentArr[row +i][col + j]
+            :childArr[i][j]
+            ? 0
+            :parentArr[row + i][col + j]
+            j++
+        }
+        i++
+    }
 }
 
 const genereateField = (rows, cols) => {
@@ -89,7 +150,7 @@ window.onload = () => {
     const ctx = canvas.getContext('2d')
     const game = {
         ctx,
-        field: []
+        field: genereateField(numberOfRows + 4, numberOfCols)
     }
 
     render(game)

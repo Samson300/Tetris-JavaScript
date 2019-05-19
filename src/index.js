@@ -73,18 +73,32 @@ class Block {
         this.position = { x, y }
         this.isAlive = true
     }
+
+    findCollision(field) {
+        const { x, y } = this.position
+        this.cells.forEach((row, i) => {
+            rows.forEach((cells, j) => {
+                if (cells && ((y + i >= numberOfRows) || field[y +i][x + j])) {
+                    this.isAlive = false
+                    return
+                }
+            })
+        })
+    }
 }
 
 const checkCanMove = () => {
     return true
 }
 
+const { requestAnimationFrame } = window
 const fps = 24
 const timeToMoveDown = 500
 
 let prevTime = 0
 let counterOfF = 0
 let prevPosition = { x:0, y:0 }
+let prevBlockCells = [[]]
 
 const render = (game, block, time) => {
     if(!block) {
@@ -119,7 +133,15 @@ const render = (game, block, time) => {
         block.cells = prevBlockCells
     }
 
-    
+    block.findCollision(field)
+    if(block.isAlive) {
+        insertIntoArray(block.cells, field, position.y, position.x)
+        drawField(field, ctx)
+        prevPosition = Object.assign({}, position)
+        prevBlockCells = [].concat(block.cells)
+    }
+
+    requestAnimationFrame((time) => render(game, block, time))
 }
 
 const insertIntoArray = (childArr, parentArr, row, col, clearMode) => {
@@ -143,6 +165,7 @@ const insertIntoArray = (childArr, parentArr, row, col, clearMode) => {
 const genereateField = (rows, cols) => {
     const field = Array.from({length: rows},
         () => Array.from({length: cols}, () => 0))
+    return field
 }
 
 window.onload = () => {
